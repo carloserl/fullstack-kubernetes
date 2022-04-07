@@ -4,7 +4,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: "python manage.py runserver 0.0.0.0:8000"
+    command : bash -c "python check_db.py --service-name db --ip db --port 3306 && 
+                      python manage.py migrate &&
+                      python manage.py runserver 0.0.0.0:8000"
     ports:
       - 8000:8000
     volumes:
@@ -18,15 +20,6 @@ services:
       MYSQL_PASSWORD: root
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE_PORT: 3306
-
-  # queue:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   command: 'python -u consumer.py'
-  #   depends_on:
-  #     - db
-
   db:
     image: mysql:5.7.22
     restart: always

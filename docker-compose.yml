@@ -1,33 +1,7 @@
 version: "3.9"
 services:
-  backend:
-    build:
-      context: ./backend/admin
-      dockerfile: Dockerfile
-    command: "python ./backend/admin/manage.py runserver 0.0.0.0:8000"
-    ports:
-      - 8000:8000
-    volumes:
-      - .:/app
-    depends_on:
-      - db
-    environment:
-      MYSQL_DATABASE_HOST: db
-      MYSQL_DATABASE: mysql-db
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE_PORT: 3306
-
-  # queue:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   command: 'python -u consumer.py'
-  #   depends_on:
-  #     - db
-
   db:
+    container_name: bd-mysql
     image: mysql:5.7.22
     restart: always
     environment:
@@ -38,6 +12,43 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE_PORT: 3306
     volumes:
-      - ./backend/admin/dbdata:/var/lib/mysql
+      - ./backend/admin/.dbdata:/var/lib/mysql
     ports:
       - 33066:3306
+  backend:
+    container_name: backend-django
+    build:
+      context: ./backend/admin
+      dockerfile: Dockerfile
+    command : bash -c "python check_db.py --service-name db --ip db --port 3306 && 
+                      python manage.py migrate &&
+                      python manage.py runserver 0.0.0.0:8000"
+    # command: "python admin/manage.py runserver 0.0.0.0:8000"
+    ports:
+      - 8000:8000
+    volumes:
+      - ./backend/admin:/app
+    depends_on:
+      - db
+    environment:
+      MYSQL_DATABASE_HOST: db
+      MYSQL_DATABASE: mysql-db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE_PORT: 3306
+  frontend:
+    container_name: frontend-react
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/client
+    ports:
+      - "5000:3000"
+    depends_on:
+      - backend
+    environment:
+      REACT_APP_ENV: carloserl-dev-compose
+      REACT_APP_BE: 'http://localhost:8000/api'
+      
