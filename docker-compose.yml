@@ -20,9 +20,7 @@ services:
     build:
       context: ./backend/admin
       dockerfile: Dockerfile
-    command : bash -c "python check_db.py --service-name db --ip db --port 3306 && 
-                      python manage.py migrate &&
-                      python manage.py runserver 0.0.0.0:8000"
+    command: bash -c "python check_db.py --service-name db --ip db --port 3306 && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     ports:
       - 8000:8000
     volumes:
@@ -40,14 +38,16 @@ services:
     container_name: frontend-react
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
-      - ./frontend:/client
+      - ./frontend:/app
+      - /app/node_modules
     ports:
       - "5000:3000"
     depends_on:
       - backend
+    stdin_open: true
     environment:
-      REACT_APP_ENV: carloserl-dev-compose
+      CHOKIDAR_USEPOLLING: "true"
+      REACT_APP_ENV: "carloserl-dev-compose"
       REACT_APP_BE: 'http://localhost:8000/api'
-      

@@ -1,11 +1,13 @@
 # base image
-FROM node:14
+FROM node:14 as build
 
-WORKDIR /client
+WORKDIR /app
 COPY package.json .
 RUN npm install 
 COPY . .
-EXPOSE 3000
+ARG REACT_APP_NAME
+ENV REACT_APP_NAME=$REACT_APP_NAME
+RUN npm run build
 
-# start app
-CMD ["npm","start"]
+FROM nginx
+COPY --from=build /app/build/ /usr/share/nginx/html
