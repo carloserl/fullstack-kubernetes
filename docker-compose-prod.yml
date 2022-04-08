@@ -1,32 +1,5 @@
 version: "3.9"
 services:
-  backend:
-    build:
-      context: ./backend/admin
-      dockerfile: Dockerfile
-    command: "python ./backend/admin/manage.py runserver 0.0.0.0:8000"
-    ports:
-      - 8000:8000
-    volumes:
-      - .:/app
-    depends_on:
-      - db
-    environment:
-      MYSQL_DATABASE_HOST: db
-      MYSQL_DATABASE: mysql-db
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE_PORT: 3306
-
-  # queue:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   command: 'python -u consumer.py'
-  #   depends_on:
-  #     - db
-
   db:
     image: mysql:5.7.22
     restart: always
@@ -38,17 +11,36 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE_PORT: 3306
     volumes:
-      - ./backend/admin/dbdata:/var/lib/mysql
+      - ./backend/admin/.dbdata:/var/lib/mysql
     ports:
       - 33066:3306
+  backend:
+    container_name: backend-django
+    build:
+      context: ./backend/admin
+      dockerfile: Dockerfile
+    command: bash -c "python check_db.py --service-name db --ip db --port 3306 && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - 8000:8000
+    volumes:
+      - ./backend/admin:/app
+    depends_on:
+      - db
+    environment:
+      MYSQL_DATABASE_HOST: db
+      MYSQL_DATABASE: mysql-db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE_PORT: 3306
   app:
-    container_name: react-client
+    container_name: frontend-nginx
     build:
       context: ./frontend
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
       args:
-      REACT_APP_ENV: carloserl-prod-compose
-      REACT_APP_BE: 'http://localhost:8000/api'
+        REACT_APP_ENV: 'carloserl-prod-compose'
+        REACT_APP_BE: 'http://localhost:8000/api'
     ports:
       - "8080:80"
     depends_on:
