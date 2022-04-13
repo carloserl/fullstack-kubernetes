@@ -43,11 +43,22 @@ services:
       - ./frontend:/app
       - /app/node_modules
     ports:
-      - "5000:3000"
+      - "3000:3000"
     depends_on:
       - backend
     stdin_open: true
     environment:
       CHOKIDAR_USEPOLLING: "true"
       REACT_APP_ENV: "carloserl-dev-compose"
-      REACT_APP_BE: 'http://localhost:8000/api'
+      REACT_APP_BE: '/be'
+  nginx:
+    container_name: nginx
+    depends_on:
+      - backend
+      - frontend
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./nginx
+    ports:
+      - "8080:80"

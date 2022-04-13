@@ -33,15 +33,25 @@ services:
       MYSQL_PASSWORD: root
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE_PORT: 3306
-  app:
+  frontend:
     container_name: frontend-nginx
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        REACT_APP_ENV: 'carloserl-prod-compose'
-        REACT_APP_BE: 'http://localhost:8000/api'
+        REACT_APP_ENV: 'carloserl-dev-compose'
+        REACT_APP_BE: ''
     ports:
       - "8080:80"
     depends_on:
       - backend
+  nginx:
+    depends_on:
+      - backend
+      - frontend
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./nginx
+    ports:
+      - "3050:80"

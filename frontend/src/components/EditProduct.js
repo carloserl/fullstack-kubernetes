@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-const endpoint = process.env.REACT_APP_BE + '/products/'
+const endpoint = process.env.REACT_APP_BE + '/api/products/'
 
 const EditProduct = () => {
     const [description, setDescription] = useState('')

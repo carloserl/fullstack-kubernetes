@@ -12,13 +12,13 @@ const ShowProducts = () => {
     }, [])
 
     const getAllProducts = async () => {
-        const response = await axios.get(`${endpoint}/products`)
+        console.log("path", endpoint)
+        const response = await axios.get(`${endpoint}/api/products`)
         setProducts(response.data)
-        console.log(response.data)
     }
 
     const deleteProduct = async (id) => {
-        await axios.delete(`${endpoint}/products/${id}`)
+        await axios.delete(`${endpoint}/api/products/${id}`)
         getAllProducts()
     }
     return (
