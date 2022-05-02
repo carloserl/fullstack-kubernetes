@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: server-app
-          image: carloserl/fullstack-kubernetes_backend:1.00
+          image: carloserl/fullstack-kubernetes_backend:1.01
           ports:
             - containerPort: 8000
           env:

@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: client-app
-        image: carloserl/fullstack-kubernetes_frontend:1.00
+        image: carloserl/fullstack-kubernetes_frontend:1.01
         ports:
         - containerPort: 3000
