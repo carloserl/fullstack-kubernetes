@@ -5,7 +5,7 @@ metadata:
   labels:
     app: server-app
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: server-app
@@ -17,13 +17,19 @@ spec:
       containers:
         - name: server-app
           image: carloserl/fullstack-kubernetes_backend:1.01
+          command: ["/bin/sh"]
+          args:
+            [
+              "-c",
+              "python manage.py migrate && python manage.py runserver 0.0.0.0:8000",
+            ]
           ports:
             - containerPort: 8000
           env:
             - name: MYSQL_DATABASE
               value: mysql-db
             - name: MYSQL_DATABASE_HOST
-              value: postgres-cluster-ip-service
+              value: mysql-cluster-ip-service
             - name: MYSQL_DATABASE_PORT
               value: "3306"
             - name: MYSQL_USER

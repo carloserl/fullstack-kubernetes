@@ -5,7 +5,7 @@ metadata:
   labels:
     app: client-app
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: client-app
@@ -15,7 +15,7 @@ spec:
         app: client-app
     spec:
       containers:
-      - name: client-app
-        image: carloserl/fullstack-kubernetes_frontend:1.01
-        ports:
-        - containerPort: 3000
+        - name: client-app
+          image: carloserl/fullstack-kubernetes_frontend:1.01
+          ports:
+            - containerPort: 3000
