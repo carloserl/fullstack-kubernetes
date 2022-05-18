@@ -1,0 +1,23 @@
+frontend:
+  name: client-app
+  image: carloserl/fullstack-kubernetes_frontend:1.01
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+
+backend:
+  name: server-app
+  image: carloserl/fullstack-kubernetes_backend:1.01
+  service:
+    type: ClusterIP
+    port: 8000
+    targetPort: 8000
+
+database:
+  name: mysql-app
+  image: mysql:5.7.22
+  service:
+    type: ClusterIP
+    port: 3306
+    targetPort: 3306
